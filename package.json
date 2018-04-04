@@ -1,0 +1,25 @@
+{
+	"name": "fasp-server",
+	"description": "A server for the Friendly Audio Streaming Protocol.",
+	"version": "0.1.0",
+	"main": "index.js",
+	"files": [
+		"index.js"
+	],
+	"keywords": [
+		"audio",
+		"streaming",
+		"friendly audio streaming protocol",
+		"fasp"
+	],
+	"author": "Jannis R <mail@jannisr.de>",
+	"homepage": "https://github.com/derhuerst/fasp-server",
+	"repository": "derhuerst/fasp-server",
+	"bugs": "https://github.com/derhuerst/fasp-server/issues",
+	"license": "ISC",
+	"engines": {
+		"node": ">=6"
+	},
+	"dependencies": {
+	}
+}
