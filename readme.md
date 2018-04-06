@@ -18,8 +18,19 @@ npm install fasp-server
 ## Usage
 
 ```js
-todo
+const createServer = require('fasp-server')
+
+const server = createServer((err, info) => {
+	if (err) {
+		console.error(err)
+		process.exitCode = 1
+	} else {
+		console.info('port', info.port)
+	}
+})
 ```
+
+Control the server using [`fasp-client`](https://github.com/derhuerst/fasp-client).
 
 
 ## Contributing
