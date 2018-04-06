@@ -22,6 +22,7 @@
 	},
 	"dependencies": {
 		"fasp-audio-receiver": "^0.1.0",
+		"lodash.debounce": "^4.0.8",
 		"mplayer-wrapper": "^0.1.2"
 	}
 }
