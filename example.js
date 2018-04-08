@@ -2,12 +2,13 @@
 
 const createServer = require('.')
 
-const server = createServer((err, info) => {
+createServer((err, server) => {
 	if (err) {
 		console.error(err)
 		return process.exitCode = 1
 	}
 
+	const i = server.info
 	console.info(`\
-FASP server "${info.name}" (${info.id}) listening on port ${info.port}.`)
+FASP server "${i.name}" (${i.id}) listening on port ${i.port}.`)
 })

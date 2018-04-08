@@ -1,9 +1,11 @@
 'use strict'
 
-const createReceiver = require('fasp-audio-receiver')
+const createReceiver = require('fasp-receiver')
 const {EventEmitter} = require('events')
 
 const createQueue = require('./lib/queue')
+
+const is = val => val !== null && val !== undefined
 
 const createServer = (opt, cb) => {
 	if ('function' === typeof opt) {
@@ -11,50 +13,56 @@ const createServer = (opt, cb) => {
 		opt = {}
 	}
 
-	const queue = createQueue()
 	const out = new EventEmitter()
-	out.getInfo = queue.getInfo
 
 	const receiver = createReceiver({
+		version: 2,
 		id: opt.id,
 		name: opt.name,
 		port: opt.port,
 		announce: opt.announce
-	}, cb)
-	receiver.on('error', (err) => {
-		out.emit('error', err)
+	}, (err, info) => {
+		if (err) return cb(err)
+		out.info = info
+		receiver.on('error', err => out.emit('error', err))
+
+		createQueue((err, queue) => {
+			if (err) return cb(err)
+
+			// receiver -> queue
+			receiver.on('command', (cmd, args) => {
+				if (cmd === 'play') {
+					const [url] = args
+					if ('string' === typeof url && url) queue.play(url)
+				} else if (cmd === 'queue') {
+					const [url] = args
+					if ('string' === typeof url && url) queue.queue(url)
+				} else if (cmd === 'next') {
+					queue.next()
+				} else if (cmd === 'previous') {
+					queue.previous()
+				} else if (cmd === 'remove') {
+					const [idx] = args
+					if ('number' === typeof idx) queue.remove(idx)
+				} else if (cmd === 'stop') {
+					queue.stop()
+				} else if (cmd === 'play-pause') {
+					queue.playPause()
+				} else if (cmd === 'seek') {
+					const [pos, absolute, percent] = args
+					if (is(pos)) queue.seek(pos, absolute, percent)
+				} else if (cmd === 'set-volume') {
+					const [volume] = args
+					if ('number' === typeof volume) queue.setVolume(volume)
+				}
+			})
+
+			// queue -> receiver
+			queue.on('prop', (prop, val) => receiver.send('prop', [prop, val]))
+
+			cb(null, out)
+		})
 	})
-
-	// receiver -> queue
-	receiver.on('command', (cmd, args) => {
-		if (cmd === 'play') {
-			if ('string' === typeof args[0] && args[0]) queue.play(args[0])
-		} else if (cmd === 'queue') {
-			if ('string' === typeof args[0] && args[0]) queue.queue(args[0])
-		} else if (cmd === 'next') {
-			queue.next()
-		} else if (cmd === 'previous') {
-			queue.previous()
-		} else if (cmd === 'play-pause') {
-			queue.playPause()
-		} else if (cmd === 'seek') {
-			const pos = args[0]
-			if ('string' === typeof pos) {
-				if ((pos[0] === '+' || pos[0] === '-')) queue.seek(pos)
-			} else if ('number' === typeof pos) queue.seek(pos)
-		} else if (cmd === 'seek-percent') {
-			if ('number' === typeof args[0]) queue.seekPercent(args[0])
-		} else if (cmd === 'set-volume') {
-			if ('number' === typeof args[0]) queue.setVolume(args[0])
-		} else if (cmd === 'stop') {
-			queue.stop()
-		}
-	})
-
-	// queue -> receiver
-	queue.on('info', info => receiver.sendStatus(info))
-
-	return out
 }
 
 module.exports = createServer
