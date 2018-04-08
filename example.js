@@ -5,8 +5,9 @@ const createServer = require('.')
 createServer((err, server) => {
 	if (err) {
 		console.error(err)
-		return process.exitCode = 1
+		process.exit(1)
 	}
+	server.on('error', console.error)
 
 	const i = server.info
 	console.info(`\

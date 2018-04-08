@@ -22,9 +22,10 @@
 		"node": ">=6"
 	},
 	"dependencies": {
+		"debug": "^3.1.0",
 		"fasp-receiver": "^0.2.0",
-		"js-string-escape": "^1.0.1",
-		"lodash.debounce": "^4.0.8",
+		"lodash.pick": "^4.4.0",
+		"lodash.throttle": "^4.1.1",
 		"mpv-ipc": "^0.1.3"
 	}
 }

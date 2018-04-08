@@ -2,10 +2,9 @@
 
 const createReceiver = require('fasp-receiver')
 const {EventEmitter} = require('events')
+const debug = require('debug')('fasp-server')
 
 const createQueue = require('./lib/queue')
-
-const is = val => val !== null && val !== undefined
 
 const createServer = (opt, cb) => {
 	if ('function' === typeof opt) {
@@ -28,37 +27,54 @@ const createServer = (opt, cb) => {
 
 		createQueue((err, queue) => {
 			if (err) return cb(err)
+			queue.on('error', err => out.emit('error', err))
 
 			// receiver -> queue
 			receiver.on('command', (cmd, args) => {
-				if (cmd === 'play') {
-					const [url] = args
-					if ('string' === typeof url && url) queue.play(url)
-				} else if (cmd === 'queue') {
-					const [url] = args
-					if ('string' === typeof url && url) queue.queue(url)
-				} else if (cmd === 'next') {
-					queue.next()
-				} else if (cmd === 'previous') {
-					queue.previous()
-				} else if (cmd === 'remove') {
-					const [idx] = args
-					if ('number' === typeof idx) queue.remove(idx)
-				} else if (cmd === 'stop') {
-					queue.stop()
-				} else if (cmd === 'play-pause') {
-					queue.playPause()
-				} else if (cmd === 'seek') {
-					const [pos, absolute, percent] = args
-					if (is(pos)) queue.seek(pos, absolute, percent)
-				} else if (cmd === 'set-volume') {
-					const [volume] = args
-					if ('number' === typeof volume) queue.setVolume(volume)
+				debug('command ' + cmd + ' ' + args.join(', '))
+				try {
+					if (cmd === 'get-props') {
+						const props = queue.getProps()
+						for (let prop of Object.keys(props)) {
+							sendProp(prop, props[prop])
+						}
+					} else if (cmd === 'play') {
+						const [url] = args
+						queue.play(url)
+					} else if (cmd === 'queue') {
+						const [url] = args
+						queue.queue(url)
+					} else if (cmd === 'next') {
+						queue.next()
+					} else if (cmd === 'previous') {
+						queue.previous()
+					} else if (cmd === 'remove') {
+						const [idx] = args
+						queue.remove(idx)
+					} else if (cmd === 'stop') {
+						queue.stop()
+					} else if (cmd === 'resume') {
+						queue.resume()
+					} else if (cmd === 'pause') {
+						queue.pause()
+					} else if (cmd === 'seek') {
+						const [pos, absolute, percent] = args
+						queue.seek(pos, absolute, percent)
+					} else if (cmd === 'set-volume') {
+						const [volume] = args
+						queue.setVolume(volume)
+					}
+				} catch (err) {
+					console.error('error', err) // todo
 				}
 			})
 
 			// queue -> receiver
-			queue.on('prop', (prop, val) => receiver.send('prop', [prop, val]))
+			const sendProp = (prop, val) => {
+				debug('prop ' + prop + ' ' + val)
+				receiver.send('prop', [prop, val])
+			}
+			queue.on('prop', sendProp)
 
 			cb(null, out)
 		})
