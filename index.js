@@ -91,6 +91,7 @@ const createServer = (opt, cb) => {
 			if (opt.artwork) {
 				// todo: respect CORS?
 				server.on('request', (req, res) => {
+					if (res.headersSent || req.method !== 'GET') return null
 					const url = parseUrl(req)
 					if (url.pathname !== '/artwork.jpg') return null
 					send(req, queue.artworkFilename, {
