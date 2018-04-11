@@ -3,6 +3,8 @@
 const createReceiver = require('fasp-receiver')
 const {EventEmitter} = require('events')
 const debug = require('debug')('fasp-server')
+const parseUrl = require('parseurl')
+const send = require('send')
 
 const createQueue = require('./lib/queue')
 
@@ -20,7 +22,7 @@ const createServer = (opt, cb) => {
 		name: opt.name,
 		port: opt.port,
 		announce: opt.announce
-	}, (err, info) => {
+	}, (err, info, _, server) => {
 		if (err) return cb(err)
 		out.info = info
 		receiver.on('error', err => out.emit('error', err))
@@ -75,6 +77,18 @@ const createServer = (opt, cb) => {
 				receiver.send('prop', [prop, val])
 			}
 			queue.on('prop', sendProp)
+
+			// serve artwork via HTTP
+			server.on('request', (req, res) => {
+				const url = parseUrl(req)
+				if (url.pathname !== '/artwork.jpg') return null
+				send(req, queue.artworkFilename, {
+					index: false,
+					maxAge: 60 * 60 * 1000,
+					root: queue.artworkDir
+				})
+				.pipe(res)
+			})
 
 			process.once('beforeExit', () => queue.quit())
 
