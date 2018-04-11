@@ -76,6 +76,8 @@ const createServer = (opt, cb) => {
 			}
 			queue.on('prop', sendProp)
 
+			process.once('beforeExit', () => queue.quit())
+
 			cb(null, out)
 		})
 	})
