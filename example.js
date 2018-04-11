@@ -2,7 +2,9 @@
 
 const createServer = require('.')
 
-createServer((err, server) => {
+createServer({
+	origins: ['localhost', 'websocket.org']
+}, (err, server) => {
 	if (err) {
 		console.error(err)
 		process.exit(1)

@@ -27,7 +27,8 @@ const createServer = (opt, cb) => {
 		id: opt.id,
 		name: opt.name,
 		port: opt.port,
-		announce: opt.announce
+		announce: opt.announce,
+		origins: opt.origins
 	}, (err, info, _, server) => {
 		if (err) return cb(err)
 		out.info = info
@@ -88,6 +89,7 @@ const createServer = (opt, cb) => {
 			queue.on('prop', sendProp)
 
 			if (opt.artwork) {
+				// todo: respect CORS?
 				server.on('request', (req, res) => {
 					const url = parseUrl(req)
 					if (url.pathname !== '/artwork.jpg') return null

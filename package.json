@@ -23,7 +23,7 @@
 	},
 	"dependencies": {
 		"debug": "^3.1.0",
-		"fasp-receiver": "^0.3.0",
+		"fasp-receiver": "^1.0.0",
 		"lodash.pick": "^4.4.0",
 		"lodash.throttle": "^4.1.1",
 		"mpv-wrapper": "^0.1.0",
