@@ -8,11 +8,17 @@ const send = require('send')
 
 const createQueue = require('./lib/queue')
 
+const defaults = {
+	headless: false,
+	artwork: true
+}
+
 const createServer = (opt, cb) => {
 	if ('function' === typeof opt) {
 		cb = opt
 		opt = {}
 	}
+	opt = Object.assign({}, defaults, opt)
 
 	const out = new EventEmitter()
 
@@ -27,7 +33,10 @@ const createServer = (opt, cb) => {
 		out.info = info
 		receiver.on('error', err => out.emit('error', err))
 
-		createQueue((err, queue) => {
+		createQueue({
+			headless: opt.headless,
+			artwork: opt.artwork
+		}, (err, queue) => {
 			if (err) return cb(err)
 			queue.on('error', err => out.emit('error', err))
 
@@ -78,17 +87,18 @@ const createServer = (opt, cb) => {
 			}
 			queue.on('prop', sendProp)
 
-			// serve artwork via HTTP
-			server.on('request', (req, res) => {
-				const url = parseUrl(req)
-				if (url.pathname !== '/artwork.jpg') return null
-				send(req, queue.artworkFilename, {
-					index: false,
-					maxAge: 60 * 60 * 1000,
-					root: queue.artworkDir
+			if (opt.artwork) {
+				server.on('request', (req, res) => {
+					const url = parseUrl(req)
+					if (url.pathname !== '/artwork.jpg') return null
+					send(req, queue.artworkFilename, {
+						index: false,
+						maxAge: 60 * 60 * 1000,
+						root: queue.artworkDir
+					})
+					.pipe(res)
 				})
-				.pipe(res)
-			})
+			}
 
 			process.once('beforeExit', () => queue.quit())
 
