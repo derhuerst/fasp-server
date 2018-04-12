@@ -1,16 +1,22 @@
 'use strict'
 
+const {dirname} = require('path')
 const createReceiver = require('fasp-receiver')
 const {EventEmitter} = require('events')
 const debug = require('debug')('fasp-server')
 const parseUrl = require('parseurl')
 const send = require('send')
+const serveStatic = require('serve-static')
+const final = require('finalhandler')
+
+const clientDir = dirname(require.resolve('fasp-web-client/dist/index.html'))
 
 const createQueue = require('./lib/queue')
 
 const defaults = {
 	headless: false,
-	artwork: true
+	artwork: true,
+	serveClient: true
 }
 
 const createServer = (opt, cb) => {
@@ -100,6 +106,14 @@ const createServer = (opt, cb) => {
 						root: queue.artworkDir
 					})
 					.pipe(res)
+				})
+			}
+
+			if (opt.serveClient) {
+				const serve = serveStatic(clientDir)
+				server.on('request', (req, res) => {
+					if (res.headersSent || req.method !== 'GET') return null
+					serve(req, res, final(req, res))
 				})
 			}
 
