@@ -4,7 +4,7 @@
 
 Use [`fasp-server-cli`](https://github.com/derhuerst/fasp-server-cli) if you want to run a server from the command line.
 
-Because `fasp-server` is base on the wonderful [`mpv`](https://mpv.io/), it can play [audio from many sources](https://mpv.io/manual/stable/#protocols).
+Because `fasp-server` is based on the wonderful [`mpv`](https://mpv.io/), it can play [audio from many sources](https://mpv.io/manual/stable/#protocols).
 
 [![npm version](https://img.shields.io/npm/v/fasp-server.svg)](https://www.npmjs.com/package/fasp-server)
 ![ISC-licensed](https://img.shields.io/github/license/derhuerst/fasp-server.svg)
@@ -13,6 +13,26 @@ Because `fasp-server` is base on the wonderful [`mpv`](https://mpv.io/), it can 
 
 
 ## Installing
+
+Install [`mpv`](https://mpv.io/). Refer to [their installation page](https://mpv.io/installation/) for further details.
+
+```shell
+# macOS
+brew install mpv
+# Ubuntu or similar
+sudo add-apt-repository ppa:mc3man/mpv-tests
+sudo apt update
+sudo apt install mpv
+```
+
+On many Linux systems, you also need the `dns_sd.h` headers for [mDNS](https://en.wikipedia.org/wiki/Multicast_DNS).
+
+```js
+# Ubuntu or similar
+sudo apt install libavahi-compat-libdnssd-dev
+```
+
+Then, install `fasp-server`.
 
 ```shell
 npm install fasp-server
