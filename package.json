@@ -1,7 +1,7 @@
 {
 	"name": "fasp-server",
 	"description": "A server for the Friendly Audio Streaming Protocol.",
-	"version": "1.2.2",
+	"version": "2.0.0",
 	"main": "index.js",
 	"files": [
 		"index.js",
@@ -19,18 +19,18 @@
 	"bugs": "https://github.com/derhuerst/fasp-server/issues",
 	"license": "ISC",
 	"engines": {
-		"node": ">=6"
+		"node": ">=8"
 	},
 	"dependencies": {
-		"debug": "^3.1.0",
-		"fasp-receiver": "^1.0.0",
+		"debug": "^4.1.1",
+		"fasp-receiver": "^2.0.0",
 		"fasp-web-client": "^1.0.0",
 		"finalhandler": "^1.1.1",
 		"lodash.pick": "^4.4.0",
 		"lodash.throttle": "^4.1.1",
 		"mpv-wrapper": "^0.1.0",
 		"parseurl": "^1.3.2",
-		"send": "^0.16.2",
+		"send": "^0.17.1",
 		"serve-static": "^1.13.2"
 	}
 }
