@@ -51,7 +51,9 @@ const createServer = (opt, cb) => {
 			receiver.on('command', (cmd, args) => {
 				debug('command ' + cmd + ' ' + args.join(', '))
 				try {
-					if (cmd === 'get-props') {
+					if (cmd === 'get-info') {
+						receiver.send('info', [info])
+					} else if (cmd === 'get-props') {
 						const props = queue.getProps()
 						for (let prop of Object.keys(props)) {
 							sendProp(prop, props[prop])
@@ -112,7 +114,7 @@ const createServer = (opt, cb) => {
 			if (opt.serveClient) {
 				const serve = serveStatic(clientDir)
 				server.on('request', (req, res) => {
-					if (res.headersSent || req.method !== 'GET') return null
+					if (res.headersSent) return null
 					serve(req, res, final(req, res))
 				})
 			}

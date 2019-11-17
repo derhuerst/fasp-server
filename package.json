@@ -1,7 +1,7 @@
 {
 	"name": "fasp-server",
 	"description": "A server for the Friendly Audio Streaming Protocol.",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"main": "index.js",
 	"files": [
 		"index.js",
