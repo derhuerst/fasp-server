@@ -54,7 +54,7 @@ const server = createServer((err, info) => {
 })
 ```
 
-Control the server using [`fasp-client`](https://github.com/derhuerst/fasp-client).
+Control the server programmatically using [`fasp-client`](https://github.com/derhuerst/fasp-client), or from the command line using [`fasp-client-cli`](https://github.com/derhuerst/fasp-client-cli).
 
 
 ## Contributing

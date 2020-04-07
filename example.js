@@ -1,9 +1,12 @@
 'use strict'
 
+const {hostname} = require('os')
 const createServer = require('.')
 
 createServer({
-	origins: ['localhost', 'websocket.org']
+	name: 'some-fasp-server',
+	port: 12345,
+	origins: ['localhost:12345', hostname() + '.local:12345']
 }, (err, server) => {
 	if (err) {
 		console.error(err)
